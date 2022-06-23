@@ -19,7 +19,7 @@
 ```text
 creat [unique] index index_name on table_name(coll [ASC|DESC], ...);
 ```
-ASC:升序，DESC:降序，unique:唯一索引。我们创建主键和唯一约束的时候，数据库会自动创建相应的索引。
+ASC: 升序，DESC: 降序，unique:唯一索引。我们创建主键和唯一约束的时候，数据库会自动创建相应的索引。  
 2. 查看索引
 ```text
 show indexes from table_name
