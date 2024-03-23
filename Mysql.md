@@ -141,15 +141,13 @@ explain + sql 语句
 
 ### 事务的隔离性是如何保证的呢？
 <img src="/images/mvcc.png">
-
-* 行锁，mvcc
-* mysql: 插入，更新操作，会对改行进行加锁操作，保证改行数据只能被一个线程修改成功。
-* RC （read commit）:每次读都会创建一个read view
 <img src="/images/mvcc-1.png">
 
+* 行锁，mvcc
+* 行锁: 插入，更新操作，会对改行进行加锁操作，保证改行数据只能被一个线程修改成功。
 * mvcc: 并发多版本控制：undo log + 隐藏字段 + read view 实现
 * 隐藏字段: trx_id :记录每次操作的事务id,自增；roll_pointer: 指向上一个版本的事务记录地址
 * read view: 解决一个事务，查询版本问题。规定一些规则
-*   依据read view 匹配规则和当前事务id判断该访问那个版本的数据。
-*   不同隔离级别产生read view 是不一样的。RC时，每次读都产生一个read view, RR时，只有第一次读才产生一个 read view
+* *  依据read view 匹配规则和当前事务id判断该访问那个版本的数据。
+* *  不同隔离级别产生read view 是不一样的。RC时，每次读都产生一个read view, RR时，只有第一次读才产生一个 read view
 * undo log: 回滚日志：存储老版本数据，版本链：多个事务操作同一行数据，记录不同事务修改后的数据，通过roll_pointer 形成版本链。
