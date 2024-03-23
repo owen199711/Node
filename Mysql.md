@@ -134,4 +134,22 @@ explain + sql 语句
 
 ### undo log 和 redo log 区别？
 <img src="/images/redolog.png" />
+
 * redo log : 单页数据刷磁盘时，失败，通过redo log进行数据恢复，redo log 记录磁盘页数据的变化。
+* undo log : 用户数据回滚，mvcc，记录的时数据逻辑日志，delete 时记录的时相反的insert语句，update时记录一条相反的update语句，数据回滚时，读取相应的undo log日志执行即可。
+* redo log 保证事务的持久性，undo log 保证事务的原子性和一致性
+
+### 事务的隔离性是如何保证的呢？
+<img src="/images/mvcc.png">
+
+* 行锁，mvcc
+* mysql: 插入，更新操作，会对改行进行加锁操作，保证改行数据只能被一个线程修改成功。
+* RC （read commit）:每次读都会创建一个read view
+<img src="/images/mvcc-1.png">
+
+* mvcc: 并发多版本控制：undo log + 隐藏字段 + read view 实现
+* 隐藏字段: trx_id :记录每次操作的事务id,自增；roll_pointer: 指向上一个版本的事务记录地址
+* read view: 解决一个事务，查询版本问题。规定一些规则
+*   依据read view 匹配规则和当前事务id判断该访问那个版本的数据。
+*   不同隔离级别产生read view 是不一样的。RC时，每次读都产生一个read view, RR时，只有第一次读才产生一个 read view
+* undo log: 回滚日志：存储老版本数据，版本链：多个事务操作同一行数据，记录不同事务修改后的数据，通过roll_pointer 形成版本链。
