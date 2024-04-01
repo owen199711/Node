@@ -8,12 +8,14 @@
 ```
 
 ### 上面有谈到Bean的生命周期，那你聊一下Spring Bean的生命周期？
-<img src="/images/ioc.png">
+<img src="/images/ioc1.png">
 
 ```angular2html
 1. Spring bean的生命周期：实例化，属性注入，初始化，销毁
+1. 读入配置文件生成BeanDefinition 对象
+1.1 如果实现了BeanFactoryPostProcessor接口，可以对beanDefinition进行修改，如类名，属性名等。
 2. 实例化：为bean的成员变量初始化默认值。
-3. 属性注入：对bean的变量进行赋值
+3. 属性注入：对bean的变量进行赋值 (DI) 依赖注入
 4. 检查是否实现Aware接口，并进行响应处理。
 5. BeanPostProcessor 前置处理
 6. 是否实现InitailizinBean 接口
@@ -23,15 +25,15 @@
  ### 上面有讲到属性注入过程，会存在循环依赖问题，Spring是如何解决循环依赖问题的呢？
 ```angular2html
 1. 使用三级缓存解决。
+2. singletonObjects: 一级缓存，存储完整的bean对象
+3. earlySingletonObjects: 二级缓存，存实例化完成，未初始化的对象，并且对象已被引用
+4. singleBeanFactory: 三级缓存，实例化完成，未初始化，未被引用的对象
+5. 所有(假设A)的bean在实例化后都会放入三级缓存中，在bean属性注入过程中，如果发现依赖其他对象(B)，则被依赖的对象
+   会从三级缓存删除，放入二级缓存。A属性注入完成，实例化完成，放入一级缓存，同时删除三级缓存。
+6. B创建，从二级缓存读出，进行属性注入，初始化，放入一级缓存，完成。
+7. 为何要引入三级缓存，二级缓存是不是就可以解决循环引用问题？
+8. 三级缓存是为了解决代理对象的，如果一个对象被增强，会在singleBeanFactory中的getBean方法获取到被增强的对象。
 ```
- 
- 首先：Spring通过提前暴露Bean的信息实现，循环依赖问题的解决，通过三级缓存，将Bean创建过程中（实例化完成未初始化的对象，和初始化完成的对象，和一个函数式接口）
- 假设（a-b) 创建a: 首先从容器中获取是否有 a --> 没有创建： ---> 完成实例化 --> 放入三级缓存 ---> 属性注入 需要 b-->创建b
- 容器获取 b: 没有创建 -->完成实例化 --> 放入三级缓存，  --> 属性注入  需要 a-->从容器获取 可以拿到，将 b 移到二级缓存，完成 b的创建 放入一级缓存
- a: 完成创建。
- 为什么需要三级缓存？
-  解决AOP问题，如果对象需要代理对象，在第一次对象对外暴露的时候，会调用函数是接口（getEarlyRefence，判断是否需要代理对象)。如果需要创建代理对象，不需要就直接返回
-  原对象。
 
 ### spring 中单例bean是不是线程安全的？
 ```angular2html
@@ -75,6 +77,11 @@ AOP:
 5. 适配器模式
 ```
 
-### 
+### spring整合mybatis 原理？
+```angular2html
+1. sqlSessionFactoryBean: 创建sqlSessionFactory 放入容器中
+2. MapperScannerConfigure: 扫描mapper 将beanDefinition 放入容器中，
+3. MapperFactoryBean: mapper 调用getObject时返回mapper对象。
+```
 
 
