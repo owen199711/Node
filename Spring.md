@@ -1,28 +1,29 @@
 ### Spring，IOC的理解？
-总：总的来说首先Spring,IOC使用控制反转的思想，实现了一个容器用来管理和控制bean的生命周期，原来我们创建bean通过new的方式，现在可以通过Spring容器帮我们创建和管理bean，我们使用
-只需要通过getBean从容器中取对象即可使用。
-分：
-具体来说：Spring需要帮我们实现，Bean的创建，对象生命周期管理，对象销毁等工。
-对象创建过程：Spring 定义BeanFatory 和DeafultListableBeanFactory两个Bean容器，使用Map存储Bean对象。
-然后需要读取对应的Bean定义信息，生成BeanDefinetion对象，
-我们可以通过BeanFatoryPostProcessor的处理，可以修改Bean的定义信息。如我们配置MySQL数据源的时候的配置信息，username=${jdbc.username}
-    通过BeanFatoryPostProcessor修改Bean的定义信息。
-然后是BeanPostProcessor的注册，我们可通过这个接口实现对Bean的扩展
-类信息加载完成，Spring通过反射机制实现对象创建，放入容器中，然后我们可以通过getBean方法拿到Bean进行使用
+```angular2html
+1. 使用控制反转思想，实现了一个容器用来管理和控制bean的生命周期，使用bean只需要从容器中取出来就行。
+2. Spring帮我们实现了，bean的创建，生命周期的管理，销毁等工作。
+3. 创建过程：Spring 定义BeanFactory 和 DefaultListableBeanFactory两个bean容器，使用Map集合存储bean对象。
+   首先读取bean的定义信息，生成BeanDefinition对象，Spring通过反射机制实现对象的创建。
+   我们可以通过实现BeanFactoryPostProcessor接口，修改Bean的定义信息。
+```
 
 ### 上面有谈到Bean的生命周期，那你聊一下Spring Bean的生命周期？
-总的来说：Spring Bean的生命周期包括Bean的创建，使用，销毁过程：创建过程包括：实例化，属性注入，初始化前，初始化，初始化后，创建完成
-具体来说：
-    实例化：是在堆为对象开辟空间。
-    然后，进行属性注入，对有Autoware的注解属性，进行赋值，分别通过name,type在容器中找到对应的类，赋值给属性，如果类未加载，则对该类进行加载。（会存在循环依赖问题）
-    然后是实例化前，通过BeanPostProcessor接口实现
-    实例化：调用init函数
-    实例化后，BeanPostProcessor后置处理器调用。
-    完成后将Bean放入Spring容器中
-    使用
-    销毁：调用DeopsiableBean接口destoryMethond方法。
+<img src="/images/ioc.png">
+
+```angular2html
+1. Spring bean的生命周期：实例化，属性注入，初始化，销毁
+2. 实例化：为bean的成员变量初始化默认值。
+3. 属性注入：对bean的变量进行赋值
+4. 检查是否实现Aware接口，并进行响应处理。
+5. BeanPostProcessor 前置处理
+6. 是否实现InitailizinBean 接口
+7. BeanPostProcessor 后置处理
+```
  
  ### 上面有讲到属性注入过程，会存在循环依赖问题，Spring是如何解决循环依赖问题的呢？
+```angular2html
+1. 使用三级缓存解决。
+```
  
  首先：Spring通过提前暴露Bean的信息实现，循环依赖问题的解决，通过三级缓存，将Bean创建过程中（实例化完成未初始化的对象，和初始化完成的对象，和一个函数式接口）
  假设（a-b) 创建a: 首先从容器中获取是否有 a --> 没有创建： ---> 完成实例化 --> 放入三级缓存 ---> 属性注入 需要 b-->创建b
@@ -44,5 +45,36 @@
 2. 抛出检查异常：默认只会回滚非检查异常，如果抛出检查异常，事务会失效。解决：配置rollBackFor=Exception.class, 设置只要抛出异常就回滚
 3. 非public方法导致事务失效：spring为方法创建代理，添加事务通知，前提都是方法是public的。解决：改为public
 ```
+
+### spring 中有那些注解
+```angular2html
+ web:
+   @Controller
+   @RestController : @Controller 和 @ResponseBody
+   @ResQuestMapping
+   @ResQuestBody
+容器：
+  @Component
+  @Service
+  @AutoWare
+  @Resource
+  @Value : 使用"#{}" 或"${}" 取数据
+AOP:
+  @Aspect
+  @After
+  @Before
+  @Around
+  @PointCut
+```
+### Spring中使用了那些设计模式？
+```angular2html
+1. 工厂模式
+2. 代理模式
+3. 单例模式
+4. 策略模式
+5. 适配器模式
+```
+
+### 
 
 
