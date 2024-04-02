@@ -44,14 +44,24 @@ excute提交任务没有返回值。
 ```
 
 ### ThreadLocal的原理和使用场景？
-
+```angular2html
+1. 可以理解为线程存储数据的盒子，在threadLocalMap中存储数据，使用threadLocal对象作为key.
+2. 线程通过线程id获取到对应的threadLocalMap,通过threadLocal对象key获取值。
+使用场景：
+  1. 线程内部传递数据
+```
 
 ### TThreadLocal内存泄露原因，如何避免？
-
+```angular2html
+1. 由于threadLocal的key是弱引用，会被gc,而value依旧存在内存中，产生内存泄漏。
+2. 每次使用完数据，调用remove方法。手动清除数据。
+```
 
 
 ### volatile关键字的理解？
-禁止指令重排，保证线程对共享的数据可见性，如果主存数据发生变化，其他线程内的缓存数据都会失效，需要从新从主存加载。
+```angular2html
+1. 禁止指令重排，保证线程对共享的数据可见性，如果主存数据发生变化，其他线程内的缓存数据都会失效，需要从新从主存加载。
+```
 
 
 ### Java内存模型？
